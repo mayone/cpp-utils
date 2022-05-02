@@ -1,12 +1,21 @@
 CC = gcc
 CFLAGS  += -I. -fPIC
-LDFLAGS += -L. -shared
+UNAME_S := $(shell uname -s)
+ifeq ($(UNAME_S),Linux)
+	LDFLAGS += -L. -shared
+	LIB_EXT=so
+endif
+ifeq ($(UNAME_S),Darwin)
+	LDFLAGS += -L. -dynamiclib
+	LIB_EXT=dylib
+endif
+
 # DEF += -D
 # PROJDIRS = ./
 # SRCS = $(sort $(shell find $(PROJDIRS) -type f -name "*.c"))
 SRCS = $(wildcard *.c)
 OBJS = $(patsubst %.c, %.o, $(SRCS))
-TARGET = libhello.so
+TARGET = libhello.$(LIB_EXT)
 
 all: $(TARGET)
 
