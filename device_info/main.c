@@ -5,12 +5,14 @@
 
 void sysInfo();
 void byteOrder();
+void compilerVer();
 void detailInfo();
 
 int main(int argc, char const *argv[])
 {
     sysInfo();
     byteOrder();
+    compilerVer();
     // detailInfo();
 
     return 0;
@@ -76,6 +78,11 @@ void byteOrder()
     {
         printf("sizeof(short) = %lu\n", sizeof(short));
     }
+}
+
+void compilerVer()
+{
+    printf("GNU Compiler:\t%d.%d.%d\n", __GNUC__, __GNUC_MINOR__, __GNUC_PATCHLEVEL__);
 }
 
 void detailInfo()
