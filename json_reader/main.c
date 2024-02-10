@@ -1,21 +1,23 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 #include <sys/file.h>
-#include <cjson/cJSON.h>
+#include "cjson/cJSON.h"
 
-#define USER_JSON       "users.json"
-#define OUTPUT_JSON     "output.json"
+#define USER_JSON "users.json"
+#define OUTPUT_JSON "output.json"
 
-#define WRITE_JSON_FILE(fpath, x, y...) do {             \
-        FILE *fp = NULL;                                 \
-        fp = fopen(fpath, "w+");                         \
-        flock(fp->_fileno, LOCK_EX);                     \
-        fprintf(fp, x, ##y);                             \
-        fflush(fp);                                      \
-        flock(fp->_fileno, LOCK_UN);                     \
-        fclose(fp);                                      \
-    } while(0)
-
+#define WRITE_JSON_FILE(fpath, x, y...) \
+    do                                  \
+    {                                   \
+        FILE *fp = NULL;                \
+        fp = fopen(fpath, "w+");        \
+        flock(fileno(fp), LOCK_EX);     \
+        fprintf(fp, x, ##y);            \
+        fflush(fp);                     \
+        flock(fileno(fp), LOCK_UN);     \
+        fclose(fp);                     \
+    } while (0)
 
 cJSON *readJSON(char *fpath);
 
@@ -24,8 +26,7 @@ cJSON *createUsers();
 cJSON *createUser(
     char *name, int age,
     double height, double weight,
-    char *langList[], int numLangs
-);
+    char *langList[], int numLangs);
 
 int main(int argc, char const *argv[])
 {
@@ -35,7 +36,8 @@ int main(int argc, char const *argv[])
     cJSON *newUsers;
 
     jsonConfig = readJSON(USER_JSON);
-    if (jsonConfig == NULL) {
+    if (jsonConfig == NULL)
+    {
         printf("%s():%d    Failed to read JSON %s\n", __func__, __LINE__, USER_JSON);
         return 0;
     }
@@ -45,21 +47,23 @@ int main(int argc, char const *argv[])
     /* Add users */
     users = cJSON_GetObjectItemCaseSensitive(jsonConfig, "users");
     newUsers = createUsers();
-    cJSON_ArrayForEach(user, newUsers) {
+    cJSON_ArrayForEach(user, newUsers)
+    {
         cJSON_AddItemReferenceToArray(users, user);
     }
 
     printf("Updated users\n");
     printf("%s\n", cJSON_Print(jsonConfig));
 
-    WRITE_JSON_FILE(OUTPUT_JSON, cJSON_Print(jsonConfig));
+    WRITE_JSON_FILE(OUTPUT_JSON, "%s", cJSON_Print(jsonConfig));
 
     cJSON_Delete(jsonConfig);
 
     return 0;
 }
 
-cJSON *readJSON(char *fpath) {
+cJSON *readJSON(char *fpath)
+{
     char *buffer = NULL;
     long length;
     FILE *fp = NULL;
@@ -67,7 +71,8 @@ cJSON *readJSON(char *fpath) {
     cJSON *jsonConfig;
 
     fp = fopen(fpath, "r");
-    if (fp == NULL) {
+    if (fp == NULL)
+    {
         printf("%s():%d    Failed to open %s\n", __func__, __LINE__, fpath);
         return NULL;
     }
@@ -78,10 +83,11 @@ cJSON *readJSON(char *fpath) {
     fseek(fp, 0, SEEK_SET);
     buffer = malloc(length + 1);
 
-    fread(buffer ,1, length, fp);
+    fread(buffer, 1, length, fp);
     buffer[length] = '\0';
     fclose(fp);
-    if (buffer == NULL) {
+    if (buffer == NULL)
+    {
         printf("%s():%d    Failed to read to buffer\n", __func__, __LINE__);
         return NULL;
     }
@@ -91,7 +97,8 @@ cJSON *readJSON(char *fpath) {
     return jsonConfig;
 }
 
-cJSON *createUsers() {
+cJSON *createUsers()
+{
     cJSON *users = cJSON_CreateArray();
     cJSON *user;
 
@@ -100,15 +107,13 @@ cJSON *createUsers() {
     user = createUser(
         "IV", 27,
         163.3, 52.5,
-        langList1, sizeof(langList1) / sizeof(char *)
-    );
+        langList1, sizeof(langList1) / sizeof(char *));
     cJSON_AddItemToArray(users, user);
 
     user = createUser(
         "IU", 28,
         161.8, 0,
-        langList2, sizeof(langList2) / sizeof(char *)
-    );
+        langList2, sizeof(langList2) / sizeof(char *));
     cJSON_AddItemToArray(users, user);
 
     return users;
@@ -117,8 +122,8 @@ cJSON *createUsers() {
 cJSON *createUser(
     char *name, int age,
     double height, double weight,
-    char *langList[], int numLang
-) {
+    char *langList[], int numLang)
+{
     int i;
     cJSON *user;
     cJSON *list;
@@ -126,35 +131,44 @@ cJSON *createUser(
 
     user = cJSON_CreateObject();
     item = cJSON_CreateString(name);
-    if (item) {
+    if (item)
+    {
         cJSON_AddItemToObject(user, "name", item);
     }
 
     item = cJSON_CreateNumber(age);
-    if (item) {
+    if (item)
+    {
         cJSON_AddItemToObject(user, "age", item);
     }
 
     item = cJSON_CreateNumber(height);
-    if (item) {
+    if (item)
+    {
         cJSON_AddItemToObject(user, "height", item);
     }
 
-    if (weight == 0) {
+    if (weight == 0)
+    {
         item = cJSON_CreateNull();
-    } else {
+    }
+    else
+    {
         item = cJSON_CreateNumber(weight);
     }
-    if (item) {
+    if (item)
+    {
         cJSON_AddItemToObject(user, "weight", item);
     }
 
     list = cJSON_CreateArray();
-    for (i = 0; i < numLang; i++) {
+    for (i = 0; i < numLang; i++)
+    {
         item = cJSON_CreateString(langList[i]);
         cJSON_AddItemToArray(list, item);
     }
-    if (list) {
+    if (list)
+    {
         cJSON_AddItemToObject(user, "languages", list);
     }
 
