@@ -34,8 +34,10 @@ lib/lib%.$(LIB_EXT): %
 
 $(EXEC): $(OBJS)
 	$(CC) $(OBJS) -o $@ $(LDFLAGS)
+ifeq ($(UNAME_S),Darwin)
 	# Changing Loader Paths
 	install_name_tool -change libcjson.$(LIB_EXT).$(CJSON_VER) @loader_path/lib/libcjson.$(LIB_EXT) $@
+endif
 %.o: %.c
 # .c.o:
 	$(CC) $(CFLAGS) $(DEF) -c $? -o $@

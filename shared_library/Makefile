@@ -27,8 +27,10 @@ lib/lib%.$(LIB_EXT): %
 
 $(EXEC): $(OBJS)
 	$(CC) $(OBJS) -o $@ $(LDFLAGS)
+ifeq ($(UNAME_S),Darwin)
 	# Changing Loader Paths
 	install_name_tool -change libhello.$(LIB_EXT) @loader_path/lib/libhello.$(LIB_EXT) $@
+endif
 %.o: %.c
 # .c.o:
 	$(CC) $(CFLAGS) $(DEF) -c $? -o $@
