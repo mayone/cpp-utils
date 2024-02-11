@@ -20,7 +20,7 @@ all: $(LIBS) $(EXEC)
 
 lib/lib%.$(LIB_EXT): %
 	$(MAKE) -C $^
-	cp $^/lib$^.$(LIB_EXT) lib
+	cp $^/lib$^.$(LIB_EXT)* lib
 	# Changing Dynamic Library IDs
 	# install_name_tool -id @rpath/lib$^.$(LIB_EXT) lib/lib$^.$(LIB_EXT)
 
@@ -39,5 +39,5 @@ endif
 run:
 	./$(EXEC)
 clean:
-	rm -f $(EXEC) $(OBJS) $(LIBS)
+	rm -f $(EXEC) $(OBJS) $(LIBS)*
 	$(MAKE) -C ./hello clean

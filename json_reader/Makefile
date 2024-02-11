@@ -31,7 +31,7 @@ endif
 
 lib/lib%.$(LIB_EXT): %
 	$(MAKE) -C $^
-	cp $^/lib$^.$(LIB_EXT) lib
+	cp $^/lib$^.$(LIB_EXT)* lib
 	# Changing Dynamic Library IDs
 	# install_name_tool -id @rpath/lib$^.$(LIB_EXT) lib/lib$^.$(LIB_EXT)
 
@@ -50,4 +50,4 @@ endif
 run:
 	./$(EXEC)
 clean:
-	rm -rf $(EXEC) $(OBJS) $(LIBS) cjson
+	rm -rf $(EXEC) $(OBJS) $(LIBS)* cjson
