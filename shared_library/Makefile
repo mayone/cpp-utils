@@ -4,8 +4,7 @@ UNAME_S := $(shell uname -s)
 ifeq ($(UNAME_S),Linux)
 	LDFLAGS += -L./hello -lhello -Wl,-rpath,'$$ORIGIN'/lib
 	LIB_EXT=so
-endif
-ifeq ($(UNAME_S),Darwin)
+else ifeq ($(UNAME_S),Darwin)
 	LDFLAGS += -L./hello -lhello
 	LIB_EXT=dylib
 endif

@@ -4,8 +4,7 @@ UNAME_S := $(shell uname -s)
 ifeq ($(UNAME_S),Linux)
 	LDFLAGS += -L./cjson -lcjson -Wl,-rpath,'$$ORIGIN'/lib
 	LIB_EXT=so
-endif
-ifeq ($(UNAME_S),Darwin)
+else ifeq ($(UNAME_S),Darwin)
 	LDFLAGS += -L./cjson -lcjson
 	LIB_EXT=dylib
 endif
@@ -22,7 +21,11 @@ all: cjson $(LIBS) $(EXEC)
 
 cjson:
 	wget "https://github.com/DaveGamble/cJSON/archive/refs/tags/v$(CJSON_VER).tar.gz"
+ifeq ($(UNAME_S),Linux)
+	tar zxvf "v$(CJSON_VER).tar.gz" --transform "s/cJSON-$(CJSON_VER)/cjson/"
+else ifeq ($(UNAME_S),Darwin)
 	tar zxvf "v$(CJSON_VER).tar.gz" -s "/cJSON-$(CJSON_VER)/cjson/"
+endif
 	rm "v$(CJSON_VER).tar.gz"
 	# $(MAKE) -C cjson
 
